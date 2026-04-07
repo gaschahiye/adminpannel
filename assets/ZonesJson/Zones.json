@@ -1,0 +1,176 @@
+{
+  "city": "Islamabad, Rawalpindi & Karachi",
+  "note": "This zoning system is created to group nearby areas together and use a center point with a radius so that delivery or service requests are never missed.",
+  "zones": [
+    {
+      "zoneId": "ZONE_A",
+      "zoneName": "Central Islamabad (F & G Sectors)",
+      "description": "This is the main and most populated area of Islamabad. It includes all F sectors and central G sectors. Most commercial and residential requests come from here.",
+      "includedAreas": [
+        "F-5", "F-6", "F-7", "F-8", "F-10", "F-11",
+        "F-15", "F-16", "F-17",
+        "G-5", "G-6", "G-7", "G-8", "G-9", "G-10", "G-11", "G-13", "G-14"
+      ],
+      "centerPoint": {
+        "latitude": 33.7130,
+        "longitude": 73.0600,
+        "explanation": "This point is roughly in the middle of F and G sectors, so a radius from here covers all nearby sectors."
+      },
+      "radiusKm": 10,
+      "radiusExplanation": "A 10 km radius safely covers all F and G sectors even if the user's location is slightly outside sector boundaries.",
+      "example": "If a user selects G-10 or F-8, this zone should be used."
+    },
+    {
+      "zoneId": "ZONE_B",
+      "zoneName": "North & West Islamabad (D, E, C, B Sectors)",
+      "description": "This zone includes developing and less dense sectors of Islamabad, mostly towards the north and west.",
+      "includedAreas": [
+        "D-12", "D-13", "D-15", "D-17",
+        "E-11", "E-12", "E-16", "E-18",
+        "C-15", "B-17"
+      ],
+      "centerPoint": {
+        "latitude": 33.7600,
+        "longitude": 73.0300,
+        "explanation": "This point lies near D-12 and E-11, which helps cover northern and western sectors evenly."
+      },
+      "radiusKm": 10,
+      "radiusExplanation": "10 km radius ensures no request is missed even if housing societies are slightly spread out.",
+      "example": "If a user is in D-12 or B-17, this zone should be selected."
+    },
+    {
+      "zoneId": "ZONE_C",
+      "zoneName": "South & East Islamabad (I & H Sectors)",
+      "description": "This zone covers southern and eastern Islamabad including industrial and mixed residential areas.",
+      "includedAreas": [
+        "I-8", "I-9", "I-10", "I-11", "I-12", "I-14",
+        "H-8", "H-9", "H-11"
+      ],
+      "centerPoint": {
+        "latitude": 33.6800,
+        "longitude": 73.0900,
+        "explanation": "This location is near I-10, making it a good center for southern Islamabad."
+      },
+      "radiusKm": 9,
+      "radiusExplanation": "9 km radius is enough to cover I and H sectors without overlapping too much into Rawalpindi.",
+      "example": "If a user requests service from I-10 or H-8, use this zone."
+    },
+    {
+      "zoneId": "ZONE_D",
+      "zoneName": "Rawalpindi Main City",
+      "description": "Rawalpindi does not have sectors like Islamabad, so major neighborhoods are grouped together.",
+      "includedAreas": [
+        "Saddar", "Raja Bazar", "Satellite Town",
+        "College Road", "Chaklala", "Rawalpindi Cantt",
+        "Bahria Town Rawalpindi"
+      ],
+      "centerPoint": {
+        "latitude": 33.5975,
+        "longitude": 73.0479,
+        "explanation": "This is near Saddar Rawalpindi, a central and well-known location."
+      },
+      "radiusKm": 12,
+      "radiusExplanation": "12 km radius is required because Rawalpindi areas are spread out and not grid-based.",
+      "example": "If a user selects Satellite Town or Saddar, this zone applies."
+    },
+    {
+      "zoneId": "ZONE_E",
+      "zoneName": "Twin Cities Outer & Suburban Areas",
+      "description": "This zone is for areas slightly outside main Islamabad and Rawalpindi but still serviceable.",
+      "includedAreas": [
+        "Bahria Enclave",
+        "DHA Islamabad",
+        "DHA Rawalpindi",
+        "Koral",
+        "Khanna",
+        "Sohan",
+        "Airport Area"
+      ],
+      "centerPoint": {
+        "latitude": 33.6500,
+        "longitude": 73.1100,
+        "explanation": "This center helps balance coverage between Islamabad and Rawalpindi outskirts."
+      },
+      "radiusKm": 15,
+      "radiusExplanation": "A larger radius is used here because these areas are far apart and less structured.",
+      "example": "If a request comes from DHA or Bahria Enclave, use this zone."
+    },
+    {
+      "zoneId": "ZONE_F",
+      "zoneName": "South Karachi (Clifton, DHA, Saddar)",
+      "description": "This is the main commercial and upscale residential area of Karachi.",
+      "includedAreas": ["Clifton", "DHA Karachi", "Saddar", "Lyari"],
+      "centerPoint": {
+        "latitude": 24.8212,
+        "longitude": 67.0425,
+        "explanation": "Central point for South Karachi covering DHA and Saddar."
+      },
+      "radiusKm": 12,
+      "radiusExplanation": "A 12 km radius safely covers South Karachi including Clifton and DHA.",
+      "example": "If a user selects Clifton or DHA, this zone should be used."
+    },
+    {
+      "zoneId": "ZONE_G",
+      "zoneName": "East Karachi (Gulshan, Jauhar, PECHS)",
+      "description": "This zone includes major residential and commercial hubs in East Karachi.",
+      "includedAreas": ["Gulshan-e-Iqbal", "Gulistan-e-Jauhar", "PECHS", "Bahadurabad"],
+      "centerPoint": {
+        "latitude": 24.9080,
+        "longitude": 67.0822,
+        "explanation": "Lies near Gulshan and Jauhar to cover the eastern region."
+      },
+      "radiusKm": 15,
+      "radiusExplanation": "15 km radius covers these dense residential areas efficiently.",
+      "example": "If a user is in Gulshan-e-Iqbal or PECHS, this zone applies."
+    },
+    {
+      "zoneId": "ZONE_H",
+      "zoneName": "Central Karachi (Nazimabad, FB Area)",
+      "description": "This zone covers central portions of the city including busy middle-class neighborhoods.",
+      "includedAreas": ["Nazimabad", "North Nazimabad", "Federal B Area", "Liaquatabad"],
+      "centerPoint": {
+        "latitude": 24.9260,
+        "longitude": 67.0436,
+        "explanation": "Central point for Nazimabad and Federal B Area."
+      },
+      "radiusKm": 12,
+      "radiusExplanation": "12 km radius covers Central Karachi neighborhoods adequately.",
+      "example": "If a request comes from Nazimabad or FB Area, use this zone."
+    },
+    {
+      "zoneId": "ZONE_I",
+      "zoneName": "Malir & Korangi",
+      "description": "This zone covers the eastern outskirts and industrial sectors.",
+      "includedAreas": ["Malir", "Korangi", "Landhi", "Shah Faisal Colony"],
+      "centerPoint": {
+        "latitude": 24.8716,
+        "longitude": 67.1478,
+        "explanation": "Centered around Malir and Korangi industrial zones."
+      },
+      "radiusKm": 15,
+      "radiusExplanation": "Large radius due to the spread-out nature of Malir and Korangi.",
+      "example": "If a user selects Malir or Korangi, this zone should be used."
+    },
+    {
+      "zoneId": "ZONE_J",
+      "zoneName": "West Karachi & Keamari",
+      "description": "Covers western industrial areas and port zones.",
+      "includedAreas": ["Orangi Town", "SITE Area", "Baldia Town", "Keamari"],
+      "centerPoint": {
+        "latitude": 24.9392,
+        "longitude": 66.9785,
+        "explanation": "Central for West Karachi covering SITE and Orangi."
+      },
+      "radiusKm": 15,
+      "radiusExplanation": "15 km covers the sprawling western zones.",
+      "example": "If a user is in Orangi or Keamari, this zone is applied."
+    }
+  ],
+  "importantNotesForBeginners": [
+    "Always check the user's latitude and longitude against the zone center and radius.",
+    "If a user's location falls within the radius, consider it covered by that zone.",
+    "Radius is intentionally kept slightly larger to avoid missing edge cases.",
+    "Islamabad uses sectors, Rawalpindi uses area names — do not confuse them.",
+    "If a location falls in two zones, choose the nearer zone center."
+  ]
+}
