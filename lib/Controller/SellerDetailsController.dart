@@ -17,7 +17,7 @@ import '../Models/SingleSellerModel.dart'
         Inventory;
 
 import '../Network/NetworkServices.dart';
-import '../network/api_client.dart';
+import '../Network/api_client.dart';
 
 class SellerDetailsController extends GetxController {
   final ApiClient api = ApiClient(http.Client());
