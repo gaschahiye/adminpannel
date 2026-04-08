@@ -17,14 +17,14 @@ RUN flutter build web --release
 # Step 2: Use a light web server to host the built files
 FROM nginx:alpine
 
-# Copy the custom nginx configuration
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Copy the custom nginx configuration as a template for envsubst
+COPY nginx.conf /etc/nginx/templates/default.conf.template
 
 # Copy the built web files from the build-env stage
 COPY --from=build-env /app/build/web /usr/share/nginx/html
 
-# Expose port 80
+# Expose port (Railway will provide this)
 EXPOSE 80
 
-# Start nginx
+# Start nginx with environment substitution for dynamic PORT
 CMD ["nginx", "-g", "daemon off;"]
