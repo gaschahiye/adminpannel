@@ -157,11 +157,20 @@ class PaymentsView extends GetView<PaymentController> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Summary Cards
-                      Obx(() => isDesktop
-                          ? _buildDesktopSummaryGrid(controller.stats.value)
-                          : isTablet
-                              ? _buildTabletSummaryGrid(controller.stats.value)
-                              : _buildMobileSummaryGrid(controller.stats.value)),
+                      Obx(
+                        () =>
+                            isDesktop
+                                ? _buildDesktopSummaryGrid(
+                                  controller.stats.value,
+                                )
+                                : isTablet
+                                ? _buildTabletSummaryGrid(
+                                  controller.stats.value,
+                                )
+                                : _buildMobileSummaryGrid(
+                                  controller.stats.value,
+                                ),
+                      ),
 
                       const SizedBox(height: AppTheme.spacingXl),
 
@@ -218,40 +227,49 @@ class PaymentsView extends GetView<PaymentController> {
                             ),
                           ),
                           const SizedBox(width: 16),
-                          Obx(() => _FilterDropdown(
-                            label: 'Status',
-                            value: controller.selectedStatus.value,
-                            items: ['all', 'pending', 'collected', 'completed', 'failed'],
-                            onChanged: (v) => controller.applyFilter(status: v),
-                          )),
+                          Obx(
+                            () => _FilterDropdown(
+                              label: 'Status',
+                              value: controller.selectedStatus.value,
+                              items: [
+                                'all',
+                                'pending',
+                                'collected',
+                                'completed',
+                                'failed',
+                              ],
+                              onChanged:
+                                  (v) => controller.applyFilter(status: v),
+                            ),
+                          ),
                           const SizedBox(width: 12),
-                          Obx(() => _FilterDropdown(
-                            label: 'Type',
-                            value: controller.selectedType.value,
-                            items: [
-                              'all',
-                              'sale',
-                              'refund',
-                            ],
-                            onChanged: (v) => controller.applyFilter(type: v),
-                          )),
+                          Obx(
+                            () => _FilterDropdown(
+                              label: 'Type',
+                              value: controller.selectedType.value,
+                              items: ['all', 'sale', 'refund'],
+                              onChanged: (v) => controller.applyFilter(type: v),
+                            ),
+                          ),
                         ],
                       ),
 
                       const SizedBox(height: AppTheme.spacingLg),
 
                       // Payments Table
-                      Obx(() => PaymentDataTable(
-                        payments: controller.payments,
-                        isLoading: controller.isLoading.value,
-                        onClearPayment:
-                            (payment, {referenceId, notes}) =>
-                                controller.clearPayment(
-                                  payment,
-                                  referenceId: referenceId,
-                                  notes: notes,
-                                ),
-                      )),
+                      Obx(
+                        () => PaymentDataTable(
+                          payments: controller.payments,
+                          isLoading: controller.isLoading.value,
+                          onClearPayment:
+                              (payment, {referenceId, notes}) =>
+                                  controller.clearPayment(
+                                    payment,
+                                    referenceId: referenceId,
+                                    notes: notes,
+                                  ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
