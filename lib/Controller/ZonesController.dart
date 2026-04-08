@@ -22,7 +22,7 @@ class ZonesService extends GetxService {
       errorMessage.value = '';
 
       // Load the JSON file from assets
-      final String jsonString = await rootBundle.loadString('assets/ZonesJson/zones.json');
+      final String jsonString = await rootBundle.loadString('assets/ZonesJson/Zones.json');
       final Map<String, dynamic> jsonData = jsonDecode(jsonString);
 
       // Parse the zones data

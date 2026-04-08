@@ -39,7 +39,7 @@ flutter:
   
   assets:
     - assets/images/
-    - assets/ZonesJson/zones.json
+    - assets/ZonesJson/Zones.json
 
   fonts:
     - family: Inter
