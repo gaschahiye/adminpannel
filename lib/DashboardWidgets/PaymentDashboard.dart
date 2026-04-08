@@ -132,12 +132,14 @@ class PaymentsView extends GetView<PaymentController> {
                           ],
                         ),
                         const Spacer(),
+                        /*
                         _ActionButton(
                           icon: Icons.table_view_rounded,
                           label: 'Export Ledger',
                           onPressed: () => controller.exportLedger(),
                           color: const Color(0xFF10B981),
                         ),
+                        */
                       ],
                     ),
                   ],
@@ -407,6 +409,7 @@ class PaymentsView extends GetView<PaymentController> {
   }
 }
 
+/*
 class _ActionButton extends StatelessWidget {
   final IconData icon;
   final String label;
@@ -453,6 +456,7 @@ class _ActionButton extends StatelessWidget {
     );
   }
 }
+*/
 
 class _FilterDropdown extends StatelessWidget {
   final String label;
