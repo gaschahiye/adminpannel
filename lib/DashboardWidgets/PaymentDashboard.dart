@@ -121,14 +121,14 @@ class PaymentsView extends GetView<PaymentController> {
                               ],
                             ),
                             const SizedBox(height: 8),
-                            Text(
-                              'Elite Ledger System • Real-time reconciliations and settlements',
-                              style: AppTheme.bodyMedium.copyWith(
-                                color: AppTheme.textSecondary.withOpacity(0.6),
-                                fontWeight: FontWeight.w500,
-                                letterSpacing: 0.2,
-                              ),
-                            ),
+                            // Text(
+                            //   'Elite Ledger System • Real-time reconciliations and settlements',
+                            //   style: AppTheme.bodyMedium.copyWith(
+                            //     color: AppTheme.textSecondary.withOpacity(0.6),
+                            //     fontWeight: FontWeight.w500,
+                            //     letterSpacing: 0.2,
+                            //   ),
+                            // ),
                           ],
                         ),
                         const Spacer(),
