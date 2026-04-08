@@ -87,7 +87,7 @@ class PaymentService extends GetxService {
     }
   }
 
-  Future<void> clearPayment(
+  Future<String> clearPayment(
     String id, {
     String? referenceId,
     String? notes,
@@ -106,6 +106,7 @@ class PaymentService extends GetxService {
       if (data['success'] == true) {
         // Refresh payments after clearing
         await fetchPayments();
+        return data['message'] ?? 'Payment cleared successfully';
       } else {
         throw Exception(data['message'] ?? 'Failed to clear payment');
       }

@@ -142,12 +142,24 @@ class _PaymentDataTableState extends State<PaymentDataTable> {
     final refController = TextEditingController();
     final notesController = TextEditingController();
 
+    String dialogTitle = 'Clear Payment';
+    String actionLabel = 'Clear';
+    if (payment.type == PaymentType.refund || payment.type == PaymentType.partialRefund) {
+      if (payment.status == PaymentStatus.pending) {
+        dialogTitle = 'Collect from Seller';
+        actionLabel = 'Collect';
+      } else if (payment.status == PaymentStatus.collected) {
+        dialogTitle = 'Refund to Buyer';
+        actionLabel = 'Refund';
+      }
+    }
+
     showDialog(
       context: context,
       builder:
           (context) => AlertDialog(
             backgroundColor: AppTheme.cardBg,
-            title: Text('Clear Payment', style: AppTheme.headlineSmall),
+            title: Text(dialogTitle, style: AppTheme.headlineSmall),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -182,7 +194,7 @@ class _PaymentDataTableState extends State<PaymentDataTable> {
                   );
                   Navigator.pop(context);
                 },
-                child: const Text('Clear'),
+                child: Text(actionLabel),
               ),
             ],
           ),
@@ -204,29 +216,56 @@ class _PaymentRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     bool isHoveredLocal = false;
+    
+    String displayPersonName = payment.personName;
+    String displayPersonType = payment.personType;
+    String displayPersonPhone = payment.personPhone;
+
+    if (payment.type == PaymentType.refund || payment.type == PaymentType.partialRefund) {
+      if (payment.status == PaymentStatus.pending) {
+        if (payment.sellerName != null && payment.sellerName!.isNotEmpty) {
+          displayPersonName = payment.sellerName!;
+          displayPersonType = 'seller';
+          if (payment.sellerPhone != null && payment.sellerPhone!.isNotEmpty) {
+            displayPersonPhone = payment.sellerPhone!;
+          }
+        }
+      } else if (payment.status == PaymentStatus.collected || payment.status == PaymentStatus.completed) {
+        if (payment.buyerName != null && payment.buyerName!.isNotEmpty) {
+          displayPersonName = payment.buyerName!;
+          displayPersonType = 'buyer';
+          if (payment.buyerPhone != null && payment.buyerPhone!.isNotEmpty) {
+            displayPersonPhone = payment.buyerPhone!;
+          }
+        }
+      }
+    }
+
     return StatefulBuilder(
       builder: (context, setState) {
         return MouseRegion(
           onEnter: (_) => setState(() => isHoveredLocal = true),
           onExit: (_) => setState(() => isHoveredLocal = false),
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 150),
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppTheme.spacingLg,
-              vertical: AppTheme.spacingMd,
-            ),
-            decoration: BoxDecoration(
-              color:
-                  isHoveredLocal
-                      ? AppTheme.primaryColor.withOpacity(0.03)
-                      : Colors.transparent,
-              border: Border(
-                bottom: BorderSide(
-                  color: AppTheme.borderColor.withOpacity(0.5),
+          child: GestureDetector(
+            onTap: () => _showPaymentDetailsDialog(context, payment),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 150),
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppTheme.spacingLg,
+                vertical: AppTheme.spacingMd,
+              ),
+              decoration: BoxDecoration(
+                color:
+                    isHoveredLocal
+                        ? AppTheme.primaryColor.withOpacity(0.03)
+                        : Colors.transparent,
+                border: Border(
+                  bottom: BorderSide(
+                    color: AppTheme.borderColor.withOpacity(0.5),
+                  ),
                 ),
               ),
-            ),
-            child: Row(
+              child: Row(
               children: [
                 // Left Accent Indicator
                 AnimatedContainer(
@@ -275,36 +314,50 @@ class _PaymentRow extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        payment.personName,
+                        displayPersonName,
                         style: AppTheme.bodyMedium.copyWith(
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                       const SizedBox(height: 4),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: (payment.personType.toLowerCase() == 'seller'
-                                  ? AppTheme.primaryColor
-                                  : AppTheme.secondaryColor)
-                              .withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: Text(
-                          payment.personType.toUpperCase(),
-                          style: AppTheme.bodySmall.copyWith(
-                            color:
-                                payment.personType.toLowerCase() == 'seller'
-                                    ? AppTheme.primaryColor
-                                    : AppTheme.secondaryColor,
-                            fontWeight: FontWeight.w800,
-                            fontSize: 10,
-                            letterSpacing: 0.5,
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: (displayPersonType.toLowerCase() == 'seller'
+                                      ? AppTheme.primaryColor
+                                      : AppTheme.secondaryColor)
+                                  .withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              displayPersonType.toUpperCase(),
+                              style: AppTheme.bodySmall.copyWith(
+                                color:
+                                    displayPersonType.toLowerCase() == 'seller'
+                                        ? AppTheme.primaryColor
+                                        : AppTheme.secondaryColor,
+                                fontWeight: FontWeight.w800,
+                                fontSize: 10,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
                           ),
-                        ),
+                          if (displayPersonPhone.isNotEmpty) ...[
+                            const SizedBox(width: 8),
+                            Text(
+                              displayPersonPhone,
+                              style: AppTheme.bodySmall.copyWith(
+                                color: AppTheme.textSecondary,
+                                fontSize: 11,
+                              ),
+                            ),
+                          ],
+                        ],
                       ),
                     ],
                   ),
@@ -393,18 +446,113 @@ class _PaymentRow extends StatelessWidget {
                   ),
                 ),
                 SizedBox(
-                  width: 80,
+                  width: 140, // Increased width for text buttons
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      if (payment.status == PaymentStatus.pending)
-                        _CircleActionButton(
+                      if ((payment.type == PaymentType.refund || payment.type == PaymentType.partialRefund) && payment.status == PaymentStatus.pending)
+                        _ActionButton(
+                          icon: Icons.account_balance_wallet,
+                          label: 'Collect',
+                          color: const Color(0xFFF59E0B),
+                          onPressed: () => onClear(payment),
+                        )
+                      else if ((payment.type == PaymentType.refund || payment.type == PaymentType.partialRefund) && payment.status == PaymentStatus.collected)
+                        _ActionButton(
+                          icon: Icons.payment,
+                          label: 'Refund',
+                          color: const Color(0xFF10B981),
+                          onPressed: () => onClear(payment),
+                        )
+                      else if (payment.status == PaymentStatus.pending)
+                        _ActionButton(
                           icon: Icons.check_rounded,
+                          label: 'Clear',
                           color: AppTheme.primaryColor,
                           onPressed: () => onClear(payment),
-                          tooltip: 'Clear Payment',
                         ),
                     ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    },
+    );
+  }
+  
+  void _showPaymentDetailsDialog(BuildContext context, PaymentTimelineEntry payment) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        final isRefund = payment.type == PaymentType.refund || payment.type == PaymentType.partialRefund;
+        return Dialog(
+          backgroundColor: AppTheme.cardBg,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          child: Container(
+            width: 500,
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Payment Details', style: AppTheme.headlineMedium),
+                    IconButton(
+                      icon: const Icon(Icons.close),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                // Summary Block
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: AppTheme.darkBg,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: AppTheme.borderColor),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Order #${payment.orderId}', style: AppTheme.bodySmall.copyWith(color: AppTheme.textSecondary)),
+                          const SizedBox(height: 4),
+                          Text(payment.type.displayTitle, style: AppTheme.bodyLarge.copyWith(fontWeight: FontWeight.bold)),
+                        ],
+                      ),
+                      Text('Rs ${payment.amount.toInt()}', style: AppTheme.headlineMedium.copyWith(color: AppTheme.primaryColor, fontWeight: FontWeight.bold)),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 24),
+                
+                // Stepper
+                Text('Status Progress', style: AppTheme.bodyMedium.copyWith(fontWeight: FontWeight.bold)),
+                const SizedBox(height: 16),
+                if (isRefund) ...[
+                  _buildRefundStepper(payment.status),
+                ] else ...[
+                  _buildStandardStepper(payment.status),
+                ],
+
+                const SizedBox(height: 32),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.pop(context),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppTheme.darkBg,
+                      foregroundColor: AppTheme.textPrimary,
+                    ),
+                    child: const Text('Close'),
                   ),
                 ),
               ],
@@ -414,43 +562,128 @@ class _PaymentRow extends StatelessWidget {
       },
     );
   }
+
+  Widget _buildStandardStepper(PaymentStatus status) {
+    bool isCompleted = status == PaymentStatus.completed;
+    return Column(
+      children: [
+        _StepperStep(title: 'Pending / Requested', isActive: true, isCompleted: isCompleted),
+        _StepperLine(isActive: isCompleted),
+        _StepperStep(title: 'Completed / Cleared', isActive: isCompleted, isCompleted: isCompleted),
+      ],
+    );
+  }
+
+  Widget _buildRefundStepper(PaymentStatus status) {
+    bool isCollected = status == PaymentStatus.collected || status == PaymentStatus.completed;
+    bool isCompleted = status == PaymentStatus.completed;
+    return Column(
+      children: [
+        _StepperStep(title: 'Refund Requested (Pending)', isActive: true, isCompleted: isCollected),
+        _StepperLine(isActive: isCollected),
+        _StepperStep(title: 'Collected from Seller', isActive: isCollected, isCompleted: isCompleted),
+        _StepperLine(isActive: isCompleted),
+        _StepperStep(title: 'Paid to Buyer (Completed)', isActive: isCompleted, isCompleted: isCompleted),
+      ],
+    );
+  }
 }
 
-class _CircleActionButton extends StatelessWidget {
-  final IconData icon;
-  final Color color;
-  final VoidCallback onPressed;
-  final String tooltip;
+class _StepperStep extends StatelessWidget {
+  final String title;
+  final bool isActive;
+  final bool isCompleted;
 
-  const _CircleActionButton({
+  const _StepperStep({required this.title, required this.isActive, required this.isCompleted});
+
+  @override
+  Widget build(BuildContext context) {
+    Color color = isCompleted ? AppTheme.primaryColor : (isActive ? const Color(0xFFF59E0B) : AppTheme.textSecondary.withOpacity(0.3));
+    return Row(
+      children: [
+        Container(
+          width: 24,
+          height: 24,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: isCompleted ? color : Colors.transparent,
+            border: Border.all(color: color, width: 2),
+          ),
+          child: isCompleted ? const Icon(Icons.check, size: 16, color: Colors.white) : (isActive ? Icon(Icons.circle, size: 10, color: color) : null),
+        ),
+        const SizedBox(width: 12),
+        Text(title, style: AppTheme.bodyMedium.copyWith(color: isActive ? AppTheme.textPrimary : AppTheme.textSecondary, fontWeight: isActive ? FontWeight.bold : FontWeight.normal)),
+      ],
+    );
+  }
+}
+
+class _StepperLine extends StatelessWidget {
+  final bool isActive;
+
+  const _StepperLine({required this.isActive});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(left: 11, top: 4, bottom: 4),
+      width: 2,
+      height: 24,
+      color: isActive ? AppTheme.primaryColor : AppTheme.textSecondary.withOpacity(0.3),
+      alignment: Alignment.centerLeft,
+    );
+  }
+}
+
+class _ActionButton extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onPressed;
+  final Color color;
+
+  const _ActionButton({
     required this.icon,
-    required this.color,
+    required this.label,
     required this.onPressed,
-    required this.tooltip,
+    required this.color,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Tooltip(
-      message: tooltip,
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onPressed,
-          borderRadius: BorderRadius.circular(100),
-          child: Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: color.withOpacity(0.2)),
-            ),
-            child: Icon(icon, size: 18, color: color),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onPressed,
+        borderRadius: BorderRadius.circular(8),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: color.withOpacity(0.2)),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: 14, color: color),
+              const SizedBox(width: 4),
+              Text(
+                label,
+                style: AppTheme.bodySmall.copyWith(
+                  color: color,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 10,
+                ),
+              ),
+            ],
           ),
         ),
       ),
     );
   }
 }
+
+
 
 class _LoadingRow extends StatelessWidget {
   const _LoadingRow();

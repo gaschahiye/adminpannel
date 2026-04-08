@@ -76,12 +76,12 @@ class PaymentController extends GetxController {
   Future<void> clearPayment(PaymentTimelineEntry payment, {String? referenceId, String? notes}) async {
     try {
       isLoading.value = true;
-      await _paymentService.clearPayment(
+      final message = await _paymentService.clearPayment(
         payment.id,
         referenceId: referenceId,
         notes: notes,
       );
-      Get.snackbar('Success', 'Payment cleared successfully',
+      Get.snackbar('Success', message,
           backgroundColor: Colors.green, colorText: Colors.white);
     } catch (e) {
       Get.snackbar('Error', 'Clear failed: $e',

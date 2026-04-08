@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 
 enum PaymentType {
-  pickupFee('pickup_fee'),
-  deliveryFee('delivery_fee'),
   refund('refund'),
   sale('sale'),
   other('other'),
@@ -21,10 +19,6 @@ enum PaymentType {
 
   String get displayTitle {
     switch (this) {
-      case PaymentType.pickupFee:
-        return 'Pickup Fee';
-      case PaymentType.deliveryFee:
-        return 'Delivery Fee';
       case PaymentType.refund:
         return 'Refund';
       case PaymentType.sale:
@@ -41,6 +35,7 @@ enum PaymentType {
 
 enum PaymentStatus {
   pending('pending'),
+  collected('collected'),
   completed('completed'),
   failed('failed');
 
@@ -57,11 +52,13 @@ enum PaymentStatus {
   Color get color {
     switch (this) {
       case PaymentStatus.pending:
-        return const Color(0xFFF59E0B);
+        return const Color(0xFFF59E0B); // Amber
+      case PaymentStatus.collected:
+        return const Color(0xFFD97706); // Darker Amber/Orange
       case PaymentStatus.completed:
-        return const Color(0xFF10B981);
+        return const Color(0xFF10B981); // Green
       case PaymentStatus.failed:
-        return const Color(0xFFEF4444);
+        return const Color(0xFFEF4444); // Red
     }
   }
 
@@ -69,6 +66,8 @@ enum PaymentStatus {
     switch (this) {
       case PaymentStatus.pending:
         return const Color(0x14F59E0B);
+      case PaymentStatus.collected:
+        return const Color(0x14D97706);
       case PaymentStatus.completed:
         return const Color(0x1410B981);
       case PaymentStatus.failed:
@@ -80,6 +79,8 @@ enum PaymentStatus {
     switch (this) {
       case PaymentStatus.pending:
         return Icons.pending;
+      case PaymentStatus.collected:
+        return Icons.account_balance_wallet;
       case PaymentStatus.completed:
         return Icons.check_circle;
       case PaymentStatus.failed:
@@ -136,7 +137,11 @@ class PaymentTimelineEntry {
   final PaymentStatus status;
   final String notes;
   final String? sellerId;
+  final String? sellerName;
+  final String? sellerPhone;
   final String? buyerId;
+  final String? buyerName;
+  final String? buyerPhone;
   final String? driverId;
   final String? originalPaymentMethod;
   final String? cause;
@@ -156,17 +161,17 @@ class PaymentTimelineEntry {
     required this.status,
     required this.notes,
     this.sellerId,
+    this.sellerName,
+    this.sellerPhone,
     this.buyerId,
+    this.buyerName,
+    this.buyerPhone,
     this.driverId,
     this.originalPaymentMethod,
     this.cause,
   });
 
   String get displayStatus {
-    if ((type == PaymentType.deliveryFee || type == PaymentType.pickupFee) &&
-        status == PaymentStatus.completed) {
-      return 'RECEIVED';
-    }
     return status.value.toUpperCase();
   }
 
@@ -212,7 +217,11 @@ class PaymentTimelineEntry {
       ),
       notes: (json['notes'] ?? '').toString(),
       sellerId: (json['sellerId'])?.toString(),
+      sellerName: (json['sellerName'])?.toString(),
+      sellerPhone: (json['sellerPhone'])?.toString(),
       buyerId: (json['buyerId'])?.toString(),
+      buyerName: (json['buyerName'])?.toString(),
+      buyerPhone: (json['buyerPhone'])?.toString(),
       driverId: (json['driverId'])?.toString(),
       originalPaymentMethod: (json['originalPaymentMethod'])?.toString(),
       cause: (json['cause'])?.toString(),
@@ -235,7 +244,11 @@ class PaymentTimelineEntry {
       'status': status.value,
       'notes': notes,
       'sellerId': sellerId,
+      'sellerName': sellerName,
+      'sellerPhone': sellerPhone,
       'buyerId': buyerId,
+      'buyerName': buyerName,
+      'buyerPhone': buyerPhone,
       'driverId': driverId,
       'originalPaymentMethod': originalPaymentMethod,
       'cause': cause,
@@ -256,6 +269,8 @@ class PaymentSummary {
   final double refundAmount;
   final double companyRevenue;
   final double totalAmount;
+  final double collectedAmount; // New field
+  final int collectedCount; // New field
   final Map<String, int> statusDistribution;
 
   PaymentSummary({
@@ -270,6 +285,8 @@ class PaymentSummary {
     this.refundAmount = 0,
     this.companyRevenue = 0,
     this.totalAmount = 0,
+    this.collectedAmount = 0,
+    this.collectedCount = 0,
     this.statusDistribution = const {},
   });
 
@@ -301,6 +318,8 @@ class PaymentSummary {
       refundAmount: _toDouble(json['refundAmount']),
       companyRevenue: _toDouble(json['companyRevenue']),
       totalAmount: _toDouble(json['totalAmount']),
+      collectedAmount: _toDouble(json['collectedAmount']),
+      collectedCount: (json['collectedCount'] ?? 0).toInt(),
       statusDistribution: distribution,
     );
   }

@@ -219,7 +219,7 @@ class PaymentsView extends GetView<PaymentController> {
                           Obx(() => _FilterDropdown(
                             label: 'Status',
                             value: controller.selectedStatus.value,
-                            items: ['all', 'pending', 'completed', 'failed'],
+                            items: ['all', 'pending', 'collected', 'completed', 'failed'],
                             onChanged: (v) => controller.applyFilter(status: v),
                           )),
                           const SizedBox(width: 12),
@@ -230,8 +230,6 @@ class PaymentsView extends GetView<PaymentController> {
                               'all',
                               'sale',
                               'refund',
-                              'pickup_fee',
-                              'delivery_fee',
                             ],
                             onChanged: (v) => controller.applyFilter(type: v),
                           )),
@@ -272,6 +270,30 @@ class PaymentsView extends GetView<PaymentController> {
       mainAxisSpacing: AppTheme.spacingLg,
       children: [
         PaymentSummaryCard(
+          title: 'Total Pending',
+          amount: stats.totalPending,
+          subtitle: 'Awaiting clearance',
+          icon: Icons.pending_actions,
+          color: AppTheme.warningColor,
+          onTap: () => controller.applyFilter(status: 'pending'),
+        ),
+        PaymentSummaryCard(
+          title: 'Collected (Holding)',
+          amount: stats.collectedAmount,
+          subtitle: '${stats.collectedCount} collected refunds',
+          icon: Icons.account_balance_wallet,
+          color: const Color(0xFFD97706), // Amber
+          onTap: () => controller.applyFilter(status: 'collected'),
+        ),
+        PaymentSummaryCard(
+          title: 'Fully Cleared',
+          amount: stats.clearedAmount,
+          subtitle: 'Completed transactions',
+          icon: Icons.check_circle,
+          color: const Color(0xFF10B981), // Success green
+          onTap: () => controller.applyFilter(status: 'completed'),
+        ),
+        PaymentSummaryCard(
           title: 'Total Volume',
           amount: stats.totalAmount,
           subtitle: 'Transaction Volume',
@@ -283,33 +305,9 @@ class PaymentsView extends GetView<PaymentController> {
           title: 'Company Revenue',
           amount: stats.companyRevenue,
           subtitle: 'Earnings from fees',
-          icon: Icons.account_balance_wallet,
+          icon: Icons.account_balance,
           color: const Color(0xFF8B5CF6), // Purple for revenue
-          onTap: () => controller.applyFilter(type: 'delivery_fee'),
-        ),
-        PaymentSummaryCard(
-          title: 'Pending',
-          amount: stats.totalPending,
-          subtitle: 'Awaiting clearance',
-          icon: Icons.pending_actions,
-          color: AppTheme.warningColor,
-          onTap: () => controller.applyFilter(status: 'pending'),
-        ),
-        PaymentSummaryCard(
-          title: 'Cleared',
-          amount: stats.clearedAmount,
-          subtitle: 'Processed payments',
-          icon: Icons.check_circle,
-          color: const Color(0xFF10B981), // Success green
-          onTap: () => controller.applyFilter(status: 'completed'),
-        ),
-        PaymentSummaryCard(
-          title: 'Refunds',
-          amount: stats.refundAmount,
-          subtitle: 'Total refunds',
-          icon: Icons.replay,
-          color: AppTheme.dangerColor,
-          onTap: () => controller.applyFilter(type: 'refund'),
+          // onTap: () => controller.applyFilter(type: 'delivery_fee'),
         ),
       ],
     );
@@ -324,6 +322,27 @@ class PaymentsView extends GetView<PaymentController> {
       mainAxisSpacing: AppTheme.spacingLg,
       children: [
         PaymentSummaryCard(
+          title: 'Total Pending',
+          amount: stats.totalPending,
+          subtitle: 'Awaiting clearance',
+          icon: Icons.pending_actions,
+          color: AppTheme.warningColor,
+        ),
+        PaymentSummaryCard(
+          title: 'Collected (Holding)',
+          amount: stats.collectedAmount,
+          subtitle: '${stats.collectedCount} collected refunds',
+          icon: Icons.account_balance_wallet,
+          color: const Color(0xFFD97706),
+        ),
+        PaymentSummaryCard(
+          title: 'Fully Cleared',
+          amount: stats.clearedAmount,
+          subtitle: 'Completed transactions',
+          icon: Icons.check_circle,
+          color: const Color(0xFF10B981),
+        ),
+        PaymentSummaryCard(
           title: 'Total Volume',
           amount: stats.totalAmount,
           subtitle: 'Total Volume',
@@ -334,29 +353,8 @@ class PaymentsView extends GetView<PaymentController> {
           title: 'Company Revenue',
           amount: stats.companyRevenue,
           subtitle: 'Earnings',
-          icon: Icons.account_balance_wallet,
+          icon: Icons.account_balance,
           color: const Color(0xFF8B5CF6),
-        ),
-        PaymentSummaryCard(
-          title: 'Pending',
-          amount: stats.totalPending,
-          subtitle: 'Pending',
-          icon: Icons.pending_actions,
-          color: AppTheme.warningColor,
-        ),
-        PaymentSummaryCard(
-          title: 'Cleared',
-          amount: stats.clearedAmount,
-          subtitle: 'Processed',
-          icon: Icons.check_circle,
-          color: const Color(0xFF10B981),
-        ),
-        PaymentSummaryCard(
-          title: 'Refunds',
-          amount: stats.refundAmount,
-          subtitle: 'Total refunds',
-          icon: Icons.replay,
-          color: AppTheme.dangerColor,
         ),
       ],
     );
@@ -366,6 +364,30 @@ class PaymentsView extends GetView<PaymentController> {
     return Column(
       children: [
         PaymentSummaryCard(
+          title: 'Total Pending',
+          amount: stats.totalPending,
+          subtitle: 'Awaiting clearance',
+          icon: Icons.pending_actions,
+          color: AppTheme.warningColor,
+        ),
+        const SizedBox(height: 12),
+        PaymentSummaryCard(
+          title: 'Collected (Holding)',
+          amount: stats.collectedAmount,
+          subtitle: '${stats.collectedCount} collected refunds',
+          icon: Icons.account_balance_wallet,
+          color: const Color(0xFFD97706),
+        ),
+        const SizedBox(height: 12),
+        PaymentSummaryCard(
+          title: 'Fully Cleared',
+          amount: stats.clearedAmount,
+          subtitle: 'Completed transactions',
+          icon: Icons.check_circle,
+          color: const Color(0xFF10B981),
+        ),
+        const SizedBox(height: 12),
+        PaymentSummaryCard(
           title: 'Total Volume',
           amount: stats.totalAmount,
           subtitle: 'Total Volume',
@@ -377,32 +399,8 @@ class PaymentsView extends GetView<PaymentController> {
           title: 'Company Revenue',
           amount: stats.companyRevenue,
           subtitle: 'Earnings',
-          icon: Icons.account_balance_wallet,
+          icon: Icons.account_balance,
           color: const Color(0xFF8B5CF6),
-        ),
-        const SizedBox(height: 12),
-        PaymentSummaryCard(
-          title: 'Pending',
-          amount: stats.totalPending,
-          subtitle: 'Awaiting clearance',
-          icon: Icons.pending_actions,
-          color: AppTheme.warningColor,
-        ),
-        const SizedBox(height: 12),
-        PaymentSummaryCard(
-          title: 'Cleared',
-          amount: stats.clearedAmount,
-          subtitle: 'Processed',
-          icon: Icons.check_circle,
-          color: const Color(0xFF10B981),
-        ),
-        const SizedBox(height: 12),
-        PaymentSummaryCard(
-          title: 'Refunds',
-          amount: stats.refundAmount,
-          subtitle: 'Total refunds',
-          icon: Icons.replay,
-          color: AppTheme.dangerColor,
         ),
       ],
     );
